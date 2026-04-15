@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Board Screenshot App</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <p class="eyebrow">Board Utility</p>
+        <h1>Capture the attached Board screen in one click.</h1>
+        <p class="hero-copy">
+          This app talks to the connected Android device through <code>adb exec-out screencap -p</code>,
+          saves each image locally, and keeps the latest frame ready for download.
+        </p>
+      </header>
+
+      <main class="layout">
+        <section class="panel controls-panel">
+          <div class="panel-head">
+            <h2>Capture</h2>
+            <button id="refreshButton" class="ghost-button" type="button">Refresh Devices</button>
+          </div>
+
+          <label class="field">
+            <span>Connected Device</span>
+            <select id="deviceSelect"></select>
+          </label>
+
+          <div class="actions">
+            <button id="captureButton" class="primary-button" type="button">Take Screenshot</button>
+          </div>
+
+          <dl class="meta-grid">
+            <div>
+              <dt>Status</dt>
+              <dd id="statusText">Checking device bridge...</dd>
+            </div>
+            <div>
+              <dt>ADB</dt>
+              <dd id="adbPath">Detecting...</dd>
+            </div>
+            <div>
+              <dt>Save Folder</dt>
+              <dd id="saveFolder">Detecting...</dd>
+            </div>
+          </dl>
+
+          <p id="messageBox" class="message-box" aria-live="polite"></p>
+        </section>
+
+        <section class="panel preview-panel">
+          <div class="panel-head">
+            <h2>Latest Shot</h2>
+            <a id="downloadLink" class="ghost-button hidden" href="#" download>Download PNG</a>
+          </div>
+
+          <div class="preview-frame">
+            <img id="previewImage" alt="Latest Board screenshot preview" />
+            <div id="previewEmpty" class="preview-empty">
+              Capture a frame and it will appear here.
+            </div>
+          </div>
+
+          <p id="previewMeta" class="preview-meta">No screenshots captured in this session.</p>
+        </section>
+
+        <section class="panel gallery-panel">
+          <div class="panel-head">
+            <h2>Recent Captures</h2>
+          </div>
+          <div id="gallery" class="gallery"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

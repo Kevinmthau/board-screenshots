@@ -1,0 +1,9 @@
+{
+  "name": "board-screenshot-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local utility app for capturing screenshots from an attached Board Android device.",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

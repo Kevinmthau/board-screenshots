@@ -268,6 +268,13 @@ function normalizeScreenshotPath(urlPath) {
 }
 
 async function handleApiRequest(req, res, urlPath) {
+  if (req.method === "GET" && urlPath === "/api/health") {
+    sendJson(res, 200, {
+      ok: true
+    });
+    return;
+  }
+
   if (req.method === "GET" && urlPath === "/api/status") {
     const screenshots = await getScreenshotList();
 

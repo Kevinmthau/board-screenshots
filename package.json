@@ -4,6 +4,9 @@
   "private": true,
   "description": "Local utility app for capturing screenshots from an attached Board Android device.",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "install:auto-start": "bash ./scripts/install-launch-agent.sh",
+    "open": "bash ./scripts/open-ui.sh",
+    "uninstall:auto-start": "bash ./scripts/uninstall-launch-agent.sh"
   }
 }

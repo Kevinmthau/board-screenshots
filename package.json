@@ -5,7 +5,9 @@
   "description": "Local utility app for capturing screenshots from an attached Board Android device.",
   "scripts": {
     "start": "node server.js",
+    "build:launcher": "bash ./scripts/build-launcher-app.sh",
     "install:auto-start": "bash ./scripts/install-launch-agent.sh",
+    "install:launcher": "bash ./scripts/install-launcher-app.sh",
     "open": "bash ./scripts/open-ui.sh",
     "uninstall:auto-start": "bash ./scripts/uninstall-launch-agent.sh"
   }

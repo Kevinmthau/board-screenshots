@@ -29,6 +29,20 @@ cd /Users/kevinthau/board-screenshot-app
 npm run install:auto-start
 ```
 
+Build a Dock-friendly launcher app in `dist/`:
+
+```bash
+cd /Users/kevinthau/board-screenshot-app
+npm run build:launcher
+```
+
+Install the launcher into `~/Applications` so you can keep it in the Dock:
+
+```bash
+cd /Users/kevinthau/board-screenshot-app
+npm run install:launcher
+```
+
 Open the app UI:
 
 ```bash
@@ -44,6 +58,14 @@ Remove auto-start:
 cd /Users/kevinthau/board-screenshot-app
 npm run uninstall:auto-start
 ```
+
+## Launcher app
+
+- `npm run build:launcher` creates `dist/Board Screenshots.app` plus a matching icon preview PNG.
+- `npm run install:launcher` copies the app bundle into `~/Applications/Board Screenshots.app`.
+- Once the app exists, drag it into the Dock and use it like any other launcher app.
+- The launcher calls the existing `scripts/open-ui.sh`, so it opens the browser UI and kickstarts the `launchd` server if needed.
+- If you move this repo to a different folder later, rebuild or reinstall the launcher so it points at the new path.
 
 ## Notes
 

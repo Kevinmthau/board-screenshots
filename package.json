@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "build:launcher": "bash ./scripts/build-launcher-app.sh",
+    "build:installer": "bash ./scripts/build-installer.sh",
     "install:auto-start": "bash ./scripts/install-launch-agent.sh",
     "install:launcher": "bash ./scripts/install-launcher-app.sh",
     "open": "bash ./scripts/open-ui.sh",

@@ -11,11 +11,12 @@ SOURCE_APP="$PROJECT_DIR/dist/$APP_NAME"
 TARGET_DIR="$HOME/Applications"
 TARGET_APP="$TARGET_DIR/$APP_NAME"
 
-"$BUILD_SCRIPT"
+bash "$BUILD_SCRIPT"
 
 mkdir -p "$TARGET_DIR"
 /bin/rm -rf "$TARGET_APP"
 /usr/bin/ditto "$SOURCE_APP" "$TARGET_APP"
+/usr/bin/xattr -dr com.apple.quarantine "$TARGET_APP" >/dev/null 2>&1 || true
 
-echo "Installed launcher app: $TARGET_APP"
+echo "Installed app bundle: $TARGET_APP"
 echo "You can open it from Finder or drag it into the Dock."

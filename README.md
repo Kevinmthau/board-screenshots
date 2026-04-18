@@ -6,70 +6,83 @@ Small local web app for capturing PNG screenshots from an attached Board Android
 
 - Detects attached Android devices through `adb`.
 - Captures screenshots with `adb exec-out screencap -p`.
-- Saves images into `screenshots/`.
+- Saves images into a local screenshots folder.
 - Shows the latest capture and a small recent gallery in the browser.
 
-## Run it
+## Run from the repo
 
 ```bash
-cd /Users/kevinthau/board-screenshot-app
+cd /path/to/board-screenshots
 npm start
 ```
 
 Then open `http://127.0.0.1:4820`.
 
-## Run it automatically on macOS
+In repo mode:
 
-If this computer stays connected to a Board, the best setup is to run the server as a per-user `launchd` agent at login and use a small launcher to open the UI.
+- screenshots are saved into `./screenshots`
+- the UI is served from `./public`
+- `adb` is detected from `ADB_PATH`, Android SDK locations, or `PATH`
 
-Install auto-start:
+## Install on your own Mac
+
+If this Mac stays connected to a Board, install the app bundle and the launch agent:
 
 ```bash
-cd /Users/kevinthau/board-screenshot-app
+cd /path/to/board-screenshots
+npm run install:launcher
 npm run install:auto-start
 ```
 
-Build a Dock-friendly launcher app in `dist/`:
+That installs `~/Applications/Board Screenshots.app` and runs the server automatically at login.
+
+You can then:
+
+- open `Board Screenshots.app` from Finder
+- drag it into the Dock
+- double-click `Open Board Screenshots.command` while working from the repo
+
+## Build a handoff installer for another Mac
+
+Create a distributable installer folder:
 
 ```bash
-cd /Users/kevinthau/board-screenshot-app
-npm run build:launcher
+cd /path/to/board-screenshots
+npm run build:installer
 ```
 
-Install the launcher into `~/Applications` so you can keep it in the Dock:
+That generates:
 
-```bash
-cd /Users/kevinthau/board-screenshot-app
-npm run install:launcher
-```
+- `dist/Board Screenshots.app`
+- `dist/Board Screenshots Installer/`
 
-Open the app UI:
+The installer folder includes:
 
-```bash
-cd /Users/kevinthau/board-screenshot-app
-npm run open
-```
+- `Board Screenshots.app`
+- `Install Board Screenshots.command`
+- `Uninstall Board Screenshots.command`
+- `README.txt`
 
-You can also double-click `Open Board Screenshots.command`.
+Send the entire `dist/Board Screenshots Installer` folder to the other Mac. On that Mac, they just double-click `Install Board Screenshots.command`.
 
-Remove auto-start:
+## Packaged app behavior
 
-```bash
-cd /Users/kevinthau/board-screenshot-app
-npm run uninstall:auto-start
-```
+The built macOS app bundle includes:
 
-## Launcher app
+- the app server and static UI files
+- a bundled `adb` binary
+- a bundled `node` runtime from the machine that built the installer
 
-- `npm run build:launcher` creates `dist/Board Screenshots.app` plus a matching icon preview PNG.
-- `npm run install:launcher` copies the app bundle into `~/Applications/Board Screenshots.app`.
-- Once the app exists, drag it into the Dock and use it like any other launcher app.
-- The launcher calls the existing `scripts/open-ui.sh`, so it opens the browser UI and kickstarts the `launchd` server if needed.
-- If you move this repo to a different folder later, rebuild or reinstall the launcher so it points at the new path.
+When the packaged app runs:
+
+- screenshots are saved in `~/Library/Application Support/Board Screenshots/screenshots`
+- logs are written to `~/Library/Application Support/Board Screenshots/logs`
+- the launch agent is installed at `~/Library/LaunchAgents/com.board-screenshots.app.plist`
+
+If the target Mac cannot use the bundled `node` binary, the installer will try to download a matching Node runtime during install. If that download fails, install Node manually and rerun the installer.
 
 ## Notes
 
-- The app auto-detects `adb` from the common macOS SDK path `~/Library/Android/sdk/platform-tools/adb`.
-- If your `adb` binary lives somewhere else, start the app with `ADB_PATH=/path/to/adb npm start`.
-- Screenshots are saved to `/Users/kevinthau/board-screenshot-app/screenshots`.
-- LaunchAgent logs are written to `/Users/kevinthau/board-screenshot-app/logs`.
+- `npm install` is not required for this repo. The app uses only built-in Node modules.
+- `npm run build:launcher` and `npm run build:installer` require macOS tools `swift` and `iconutil`.
+- `npm run build:installer` also requires a working `adb` on the build machine so it can bundle it into the packaged app.

@@ -3,27 +3,56 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/runtime-paths.sh"
 
 export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin:${PATH:-}"
 
-if [[ -z "${ADB_PATH:-}" ]]; then
-  if [[ -x "$HOME/Library/Android/sdk/platform-tools/adb" ]]; then
-    export ADB_PATH="$HOME/Library/Android/sdk/platform-tools/adb"
-  elif [[ -n "${ANDROID_SDK_ROOT:-}" && -x "$ANDROID_SDK_ROOT/platform-tools/adb" ]]; then
-    export ADB_PATH="$ANDROID_SDK_ROOT/platform-tools/adb"
-  elif [[ -n "${ANDROID_HOME:-}" && -x "$ANDROID_HOME/platform-tools/adb" ]]; then
-    export ADB_PATH="$ANDROID_HOME/platform-tools/adb"
-  fi
+/bin/bash "$SCRIPT_DIR/ensure-runtime.sh" >/dev/null
+
+CURRENT_ARCH="$(uname -m)"
+NODE_BIN=""
+
+if [[ -x "$RUNTIME_SUPPORT_DIR/node" ]]; then
+  NODE_BIN="$RUNTIME_SUPPORT_DIR/node"
+elif [[ -x "$RUNTIME_DIR/node" && ( -z "$PACKAGE_ARCH" || "$PACKAGE_ARCH" == "$CURRENT_ARCH" ) ]]; then
+  NODE_BIN="$RUNTIME_DIR/node"
+else
+  NODE_BIN="$(command -v node || true)"
 fi
 
-NODE_BIN="$(command -v node || true)"
 if [[ -z "$NODE_BIN" ]]; then
-  echo "Could not find node on PATH." >&2
+  echo "Could not find a compatible node runtime." >&2
   exit 1
 fi
 
-mkdir -p "$PROJECT_DIR/logs" "$PROJECT_DIR/screenshots"
-cd "$PROJECT_DIR"
+if [[ -z "${ADB_PATH:-}" ]]; then
+  for candidate in \
+    "$RUNTIME_SUPPORT_DIR/adb" \
+    "$RUNTIME_DIR/adb" \
+    "$HOME/Library/Android/sdk/platform-tools/adb" \
+    "$HOME/Android/Sdk/platform-tools/adb" \
+    "${ANDROID_SDK_ROOT:-}/platform-tools/adb" \
+    "${ANDROID_HOME:-}/platform-tools/adb"
+  do
+    if [[ -n "$candidate" && -x "$candidate" ]]; then
+      export ADB_PATH="$candidate"
+      break
+    fi
+  done
+fi
 
-exec "$NODE_BIN" "$PROJECT_DIR/server.js"
+if [[ -z "${ADB_PATH:-}" ]]; then
+  ADB_FROM_PATH="$(command -v adb || true)"
+  if [[ -n "$ADB_FROM_PATH" ]]; then
+    export ADB_PATH="$ADB_FROM_PATH"
+  fi
+fi
+
+mkdir -p "$APP_SUPPORT_DIR" "$RUNTIME_SUPPORT_DIR" "$LOG_DIR" "$SCREENSHOTS_DIR"
+cd "$APP_ROOT"
+
+export APP_DATA_DIR
+export SCREENSHOTS_DIR
+
+exec "$NODE_BIN" "$APP_ROOT/server.js"

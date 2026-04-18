@@ -8,7 +8,7 @@ const HOST = "127.0.0.1";
 const PORT = Number(process.env.PORT || 4820);
 const ROOT_DIR = __dirname;
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
-const SCREENSHOTS_DIR = path.join(ROOT_DIR, "screenshots");
+const SCREENSHOTS_DIR = expandHome(process.env.SCREENSHOTS_DIR) || path.join(ROOT_DIR, "screenshots");
 
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
